@@ -1,18 +1,18 @@
 import { Router } from "express";
-import healthRouter from "./health";
-import authRouter from "./auth";
-import marketsRouter from "./markets";
-import betsRouter from "./bets";
-import resultsRouter from "./results";
-import depositRouter from "./deposit";
-import withdrawRouter from "./withdraw";
-import usersRouter from "./users";
-import adminRouter from "./admin";
-import ratesRouter from "./rates";
-import settingsRouter from "./settings";
-import chatRouter from "./chat";
+import healthRouter from "./health.js";
+import authRouter from "./auth.js";
+import marketsRouter from "./markets.js";
+import betsRouter from "./bets.js";
+import resultsRouter from "./results.js";
+import depositRouter from "./deposit.js";
+import withdrawRouter from "./withdraw.js";
+import usersRouter from "./users.js";
+import adminRouter from "./admin.js";
+import ratesRouter from "./rates.js";
+import settingsRouter from "./settings.js";
+import chatRouter from "./chat.js";
 
-const router = Router();
+const router: any = Router();
 
 router.use(healthRouter);
 router.use(authRouter);
