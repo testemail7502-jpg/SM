@@ -1,26 +1,26 @@
 import express, { type Express } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
-import router from "./routes";
-import { logger } from "./lib/logger";
-import { connectDB } from "./lib/db";
+import router from "./routes/index.js";
+import { logger } from "./lib/logger.js";
+import { connectDB } from "./lib/db.js";
 
 const app: Express = express();
 
 connectDB();
 
 app.use(
-  pinoHttp({
+  (pinoHttp as any)({
     logger,
     serializers: {
-      req(req) {
+      req(req: any) {
         return {
           id: req.id,
           method: req.method,
           url: req.url?.split("?")[0],
         };
       },
-      res(res) {
+      res(res: any) {
         return {
           statusCode: res.statusCode,
         };
