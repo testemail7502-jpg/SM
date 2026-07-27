@@ -12,7 +12,7 @@ import ratesRouter from "./rates";
 import settingsRouter from "./settings";
 import chatRouter from "./chat";
 
-const router: any = Router();
+const router = Router();
 
 router.use(healthRouter);
 router.use(authRouter);
