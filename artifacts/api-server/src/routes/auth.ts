@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { User } from "../models/User";
-import { signToken } from "../lib/jwt";
-import { logger } from "../lib/logger";
+import { User } from "../models/User.js";
+import { signToken } from "../lib/jwt.js";
+import { logger } from "../lib/logger.js";
 
-const router = Router();
+const router: any = Router();
 
 // POST /auth/register
-router.post("/auth/register", async (req, res) => {
+router.post("/auth/register", async (req: any, res: any) => {
   try {
     const { phone, name, password, referralCode } = req.body;
     if (!phone || !name || !password) {
@@ -27,16 +27,19 @@ router.post("/auth/register", async (req, res) => {
       token,
       user: formatUser(user),
     });
-  } catch (err) {
-    logger.error({ err }, "register error");
-    return res.status(500).json({ error: "Internal server error" });
+  } catch (err: any) {
+    logger.error({ err: err?.message || err }, "register error");
+    return res.status(500).json({ error: err?.message || "Internal server error" });
   }
 });
 
 // POST /auth/login
-router.post("/auth/login", async (req, res) => {
+router.post("/auth/login", async (req: any, res: any) => {
   try {
     const { phone, password } = req.body;
+    if (!phone || !password) {
+      return res.status(400).json({ error: "Phone and password required" });
+    }
     const user = await User.findOne({ phone });
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({ error: "Invalid phone or password" });
@@ -46,14 +49,14 @@ router.post("/auth/login", async (req, res) => {
     }
     const token = signToken({ userId: user._id.toString(), role: user.role });
     return res.json({ token, user: formatUser(user) });
-  } catch (err) {
-    logger.error({ err }, "login error");
-    return res.status(500).json({ error: "Internal server error" });
+  } catch (err: any) {
+    logger.error({ err: err?.message || err }, "login error");
+    return res.status(500).json({ error: err?.message || "Internal server error" });
   }
 });
 
 // POST /auth/send-otp
-router.post("/auth/send-otp", async (req, res) => {
+router.post("/auth/send-otp", async (req: any, res: any) => {
   try {
     const { phone } = req.body;
     if (!phone) return res.status(400).json({ error: "Phone required" });
@@ -63,14 +66,14 @@ router.post("/auth/send-otp", async (req, res) => {
     logger.info({ phone, otp }, "OTP generated (mock - no SMS sent)");
     console.log(`[OTP] Phone: ${phone} → OTP: ${otp}`);
     return res.json({ message: "OTP sent successfully" });
-  } catch (err) {
-    logger.error({ err }, "send-otp error");
-    return res.status(500).json({ error: "Internal server error" });
+  } catch (err: any) {
+    logger.error({ err: err?.message || err }, "send-otp error");
+    return res.status(500).json({ error: err?.message || "Internal server error" });
   }
 });
 
 // POST /auth/verify-otp
-router.post("/auth/verify-otp", async (req, res) => {
+router.post("/auth/verify-otp", async (req: any, res: any) => {
   try {
     const { phone, otp } = req.body;
     const user = await User.findOne({ phone });
@@ -79,14 +82,14 @@ router.post("/auth/verify-otp", async (req, res) => {
     }
     await User.findByIdAndUpdate(user._id, { otp: null, otpExpiry: null });
     return res.json({ verified: true });
-  } catch (err) {
-    logger.error({ err }, "verify-otp error");
-    return res.status(500).json({ error: "Internal server error" });
+  } catch (err: any) {
+    logger.error({ err: err?.message || err }, "verify-otp error");
+    return res.status(500).json({ error: err?.message || "Internal server error" });
   }
 });
 
 // POST /auth/admin-login
-router.post("/auth/admin-login", async (req, res) => {
+router.post("/auth/admin-login", async (req: any, res: any) => {
   try {
     const { username, password } = req.body;
     const admin = await User.findOne({ phone: username, role: "admin" });
@@ -95,9 +98,9 @@ router.post("/auth/admin-login", async (req, res) => {
     }
     const token = signToken({ userId: admin._id.toString(), role: "admin" });
     return res.json({ token, user: formatUser(admin) });
-  } catch (err) {
-    logger.error({ err }, "admin-login error");
-    return res.status(500).json({ error: "Internal server error" });
+  } catch (err: any) {
+    logger.error({ err: err?.message || err }, "admin-login error");
+    return res.status(500).json({ error: err?.message || "Internal server error" });
   }
 });
 
