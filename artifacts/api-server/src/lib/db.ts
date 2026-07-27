@@ -1,29 +1,32 @@
 import mongoose from "mongoose";
-import { User } from "../models/User";
-import { Market } from "../models/Market";
-import { Rate } from "../models/Rate";
-import { AppSettings } from "../models/AppSettings";
-import { DEFAULT_MULTIPLIERS } from "./matka";
-import { logger } from "./logger";
+import { User } from "../models/User.js";
+import { Market } from "../models/Market.js";
+import { Rate } from "../models/Rate.js";
+import { AppSettings } from "../models/AppSettings.js";
+import { DEFAULT_MULTIPLIERS } from "./matka.js";
+import { logger } from "./logger.js";
 
 const DEFAULT_QR_SVG = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300"><rect width="100%" height="100%" fill="white"/><path d="M20 20h80v80H20zM40 40v40h40V40zM20 200h80v80H20zM40 220v40h40v-40zM200 20h80v80h-80zM220 40v40h40V40z" fill="%230f172a"/><path d="M120 20h20v20h-20zM160 20h20v20h-20zM120 60h40v20h-40zM180 60h20v40h-20zM140 100h40v20h-40zM20 120h40v20H20zM80 120h40v20H80zM140 140h20v20h-20zM180 140h40v20h-40zM20 160h20v20H20zM60 160h40v20H60zM120 180h60v20h-60zM200 180h40v40h-40zM120 220h40v20h-40zM180 240h20v40h-20zM220 240h40v20h-40zM140 260h20v20h-20z" fill="%230f172a"/><text x="150" y="155" font-family="sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="%23e11d48">PAY VIA UPI QR</text></svg>`;
 
 let isConnected = false;
 
 export async function connectDB(): Promise<void> {
-  if (isConnected || mongoose.connection.readyState === 1) {
-    isConnected = true;
+  if (isConnected && mongoose.connection.readyState === 1) {
     return;
   }
 
   const mongoUri = process.env.MONGODB_URI || "mongodb+srv://testemail7502_db_user:hoUG0y4z2xFoRoeX@cluster0.05kfclu.mongodb.net/satta-matka?retryWrites=true&w=majority";
   try {
-    await mongoose.connect(mongoUri);
-    isConnected = true;
+    const db = await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 5000,
+    });
+    isConnected = db.connections[0].readyState === 1;
     logger.info({ mongoUri }, "MongoDB connected successfully");
     await seedInitialData();
-  } catch (err) {
+  } catch (err: any) {
     logger.error({ err, mongoUri }, "MongoDB connection failed");
+    isConnected = false;
+    throw err;
   }
 }
 
