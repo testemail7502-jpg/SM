@@ -1,27 +1,15 @@
 {
-  "version": 2,
-  "builds": [
+  "buildCommand": "pnpm --filter ./artifacts/matka-app run build",
+  "outputDirectory": "artifacts/matka-app/dist/public",
+  "framework": null,
+  "rewrites": [
     {
-      "src": "artifacts/api-server/dist/index.mjs",
-      "use": "@vercel/node"
+      "source": "/api/(.*)",
+      "destination": "/api"
     },
     {
-      "src": "artifacts/matka-app/package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "dist/public" }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "artifacts/api-server/dist/index.mjs"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "artifacts/matka-app/dist/public/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
