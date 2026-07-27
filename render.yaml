@@ -1,0 +1,34 @@
+services:
+  # 1. Express API Backend Service
+  - type: web
+    name: satta-matka-api
+    env: node
+    buildCommand: pnpm install && pnpm --filter ./artifacts/api-server run build
+    startCommand: node ./artifacts/api-server/dist/index.mjs
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        value: mongodb+srv://testemail7502_db_user:hoUG0y4z2xFoRoeX@cluster0.05kfclu.mongodb.net/satta-matka?retryWrites=true&w=majority
+
+  # 2. User App (Static Site / Frontend)
+  - type: web
+    name: satta-matka-user-app
+    env: static
+    buildCommand: pnpm install && pnpm --filter ./artifacts/matka-app run build
+    staticPublishPath: ./artifacts/matka-app/dist/public
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+  # 3. Admin Control Panel (Static Site / Frontend)
+  - type: web
+    name: satta-matka-admin-panel
+    env: static
+    buildCommand: pnpm install && pnpm --filter ./artifacts/admin run build
+    staticPublishPath: ./artifacts/admin/dist/public
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

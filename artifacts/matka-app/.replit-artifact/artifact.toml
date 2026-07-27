@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "Sara777 - Matka App"
+version = "1.0.0"
+id = "artifacts/matka-app"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19509
+
+[services.development]
+run = "pnpm --filter @workspace/matka-app run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/matka-app", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/matka-app/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19509"
+BASE_PATH = "/"
