@@ -21,4 +21,10 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
 app.use("/api", router);
 
+// Global Error Handler
+app.use((err: any, _req: any, res: any, _next: any) => {
+  logger.error({ err: err?.message || err }, "Unhandled Express Error");
+  res.status(500).json({ error: err?.message || "Internal Server Error" });
+});
+
 export default app;
